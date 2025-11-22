@@ -1,10 +1,10 @@
-package com.sqc.acedemy;
+package com.sqc.acedemy.bai_4;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import java.util.UUID;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Builder
 @Getter
@@ -13,14 +13,10 @@ import java.util.Date;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Employee {
-    int id;
+    UUID id;
     String name;
-    LocalDate dod;
+    LocalDate dob;
     Gender gender;
     double salary;
     String phone;
-
-    public enum  Gender {
-        MALE, FEMALE, OTHER
-    }
 }
