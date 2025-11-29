@@ -20,7 +20,11 @@ public class DepartmentRepository implements IDepartmentRepository {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                list.add(new Department(rs.getInt("id"), rs.getString("name")));
+                list.add(Department.builder()
+                        .id(rs.getInt("id"))
+                        .name(rs.getString("name"))
+                        .code(rs.getString("code")) // thêm code từ DB
+                        .build());
             }
 
         } catch (SQLException e) {
@@ -38,7 +42,11 @@ public class DepartmentRepository implements IDepartmentRepository {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new Department(rs.getInt("id"), rs.getString("name"));
+                return Department.builder()
+                        .id(rs.getInt("id"))
+                        .name(rs.getString("name"))
+                        .code(rs.getString("code"))
+                        .build();
             }
 
         } catch (SQLException e) {

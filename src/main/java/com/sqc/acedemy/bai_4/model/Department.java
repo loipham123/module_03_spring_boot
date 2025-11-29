@@ -2,7 +2,7 @@ package com.sqc.acedemy.bai_4.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import java.util.UUID;
+
 
 @Builder
 @Getter
