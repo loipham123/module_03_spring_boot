@@ -1,4 +1,4 @@
-package com.sqc.acedemy.bai_4;
+package com.sqc.acedemy.bai_4.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     STUDENT_NOT_FOUND(40401,"Student is not exist",HttpStatus.NOT_FOUND),
     TEACHER_NOT_FOUND(40402,"Teacher is not exist",HttpStatus.NOT_FOUND),
-    EMPLOYEE_NOT_FOUND(40403, "Employee is not exist", HttpStatus.NOT_FOUND)
+    EMPLOYEE_NOT_FOUND(40403, "Employee is not exist", HttpStatus.NOT_FOUND),
+    DEPARTMENT_NOT_FOUND(40404, "Department is not exist", HttpStatus.NOT_FOUND)
     ;
     int code;
     String message;

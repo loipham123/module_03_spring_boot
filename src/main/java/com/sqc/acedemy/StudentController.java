@@ -1,6 +1,8 @@
 package com.sqc.acedemy;
 
-import com.sqc.acedemy.bai_4.ErrorCode;
+import com.sqc.acedemy.bai_4.exception.ApiException;
+import com.sqc.acedemy.bai_4.exception.ErrorCode;
+import com.sqc.acedemy.bai_4.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

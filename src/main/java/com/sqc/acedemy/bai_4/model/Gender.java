@@ -1,4 +1,4 @@
-package com.sqc.acedemy.bai_4;
+package com.sqc.acedemy.bai_4.model;
 
 public enum Gender {
     MALE,

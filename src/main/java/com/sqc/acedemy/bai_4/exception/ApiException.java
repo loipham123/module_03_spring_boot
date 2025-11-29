@@ -1,6 +1,5 @@
-package com.sqc.acedemy;
+package com.sqc.acedemy.bai_4.exception;
 
-import com.sqc.acedemy.bai_4.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;

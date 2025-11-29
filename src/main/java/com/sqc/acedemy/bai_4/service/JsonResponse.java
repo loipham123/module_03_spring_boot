@@ -1,6 +1,6 @@
-package com.sqc.acedemy.bai_4;
+package com.sqc.acedemy.bai_4.service;
 
-import com.sqc.acedemy.ApiResponse;
+import com.sqc.acedemy.bai_4.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

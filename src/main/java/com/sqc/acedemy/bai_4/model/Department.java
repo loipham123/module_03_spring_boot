@@ -1,10 +1,8 @@
-package com.sqc.acedemy.bai_4;
+package com.sqc.acedemy.bai_4.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import java.util.UUID;
-
-import java.time.LocalDate;
 
 @Builder
 @Getter
@@ -12,11 +10,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Employee {
-    UUID id;
+public class Department {
+    Integer id;
     String name;
-    LocalDate dob;
-    Gender gender;
-    double salary;
-    String phone;
+    String code;
 }
