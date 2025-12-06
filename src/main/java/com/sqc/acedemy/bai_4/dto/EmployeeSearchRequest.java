@@ -1,6 +1,6 @@
 package com.sqc.acedemy.bai_4.dto;
 
-import com.sqc.acedemy.bai_4.model.Gender;
+import com.sqc.acedemy.bai_4.entity.Gender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;

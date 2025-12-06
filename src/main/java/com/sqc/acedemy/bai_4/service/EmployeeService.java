@@ -3,20 +3,26 @@ package com.sqc.acedemy.bai_4.service;
 import com.sqc.acedemy.bai_4.dto.EmployeeSearchRequest;
 import com.sqc.acedemy.bai_4.exception.ApiException;
 import com.sqc.acedemy.bai_4.exception.ErrorCode;
-import com.sqc.acedemy.bai_4.model.Employee;
+import com.sqc.acedemy.bai_4.entity.Employee;
 import com.sqc.acedemy.bai_4.repository.IEmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class EmployeeService implements IEmployeeService{
     @Autowired
+    FileStorageService fileStorageService;
+
+    @Autowired
     private IEmployeeRepository employeeRepository;
 
     @Override
+    @Transactional
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
@@ -31,12 +37,14 @@ public class EmployeeService implements IEmployeeService{
     }
 
     @Override
+    @Transactional
     public Employee createEmployee(Employee employee) {
         employee.setId(UUID.randomUUID().toString());
         return employeeRepository.save(employee);
     }
 
     @Override
+    @Transactional
     public Employee updateEmployee(String id, Employee updatedEmp) {
         Employee existingEmp = getEmployeeById(id); // Check tồn tại
 
@@ -50,13 +58,38 @@ public class EmployeeService implements IEmployeeService{
     }
 
     @Override
+    @Transactional
     public void deleteEmployee(String id) {
         getEmployeeById(id); // Check tồn tại
         employeeRepository.delete(id);
     }
 
     @Override
+    @Transactional
     public List<Employee> search(EmployeeSearchRequest request) {
         return employeeRepository.search(request);
     }
+
+    @Override
+    public Employee updateAvatar(UUID id, MultipartFile file) {
+
+        // Repository yêu cầu String → convert UUID → String
+        Employee employee = employeeRepository.findById(id.toString());
+        if (employee == null) {
+            throw new ApiException(ErrorCode.EMPLOYEE_NOT_FOUND);
+        }
+
+        String oldAvatar = employee.getAvatar();
+
+        String avatarPath = fileStorageService.store(id, file);
+
+        if (oldAvatar != null && !oldAvatar.equals(avatarPath)) {
+            fileStorageService.delete(oldAvatar);
+        }
+
+        employee.setAvatar(avatarPath);
+        return employeeRepository.save(employee);
+    }
+
+
 }

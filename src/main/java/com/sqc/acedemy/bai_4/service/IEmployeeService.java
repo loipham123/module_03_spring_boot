@@ -1,9 +1,11 @@
 package com.sqc.acedemy.bai_4.service;
 
 import com.sqc.acedemy.bai_4.dto.EmployeeSearchRequest;
-import com.sqc.acedemy.bai_4.model.Employee;
+import com.sqc.acedemy.bai_4.entity.Employee;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface IEmployeeService {
     List<Employee> getAllEmployees();
@@ -11,6 +13,8 @@ public interface IEmployeeService {
     Employee createEmployee(Employee employee);
     Employee updateEmployee(String id, Employee employee);
     void deleteEmployee(String id);
+
+    Employee updateAvatar(UUID id, MultipartFile file);
 
 
     List<Employee> search(EmployeeSearchRequest request);

@@ -2,7 +2,7 @@ package com.sqc.acedemy.bai_4.service;
 
 import com.sqc.acedemy.bai_4.exception.ApiException;
 import com.sqc.acedemy.bai_4.exception.ErrorCode;
-import com.sqc.acedemy.bai_4.model.Department;
+import com.sqc.acedemy.bai_4.entity.Department;
 import com.sqc.acedemy.bai_4.repository.IDepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.sqc.acedemy.bai_4.repository;
 
-import com.sqc.acedemy.bai_4.model.Department;
+import com.sqc.acedemy.bai_4.entity.Department;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -23,7 +23,6 @@ public class DepartmentRepository implements IDepartmentRepository {
                 list.add(Department.builder()
                         .id(rs.getInt("id"))
                         .name(rs.getString("name"))
-                        .code(rs.getString("code")) // thêm code từ DB
                         .build());
             }
 
@@ -45,7 +44,6 @@ public class DepartmentRepository implements IDepartmentRepository {
                 return Department.builder()
                         .id(rs.getInt("id"))
                         .name(rs.getString("name"))
-                        .code(rs.getString("code"))
                         .build();
             }
 

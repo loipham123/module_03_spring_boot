@@ -1,19 +1,11 @@
 package com.sqc.acedemy.bai_4.controller;
 
-import com.sqc.acedemy.bai_4.exception.ApiException;
-import com.sqc.acedemy.bai_4.dto.ApiResponse;
-import com.sqc.acedemy.bai_4.model.Department;
-import com.sqc.acedemy.bai_4.exception.ErrorCode;
+import com.sqc.acedemy.bai_4.entity.Department;
 import com.sqc.acedemy.bai_4.service.IDepartmentService;
 import com.sqc.acedemy.bai_4.service.JsonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/departments")

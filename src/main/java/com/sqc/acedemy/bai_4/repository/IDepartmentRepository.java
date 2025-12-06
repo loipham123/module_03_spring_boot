@@ -1,6 +1,6 @@
 package com.sqc.acedemy.bai_4.repository;
 
-import com.sqc.acedemy.bai_4.model.Department;
+import com.sqc.acedemy.bai_4.entity.Department;
 
 import java.util.List;
 
