@@ -44,14 +44,12 @@ public class EmployeeRepository implements IEmployeeRepository {
     @Override
     public Employee save(Employee employee) {
         Transaction tx = null;
+
         try(Session session = ConnectionUtil.sessionFactory.openSession()){
             tx = session.beginTransaction();
 
             if(employee.getId()== null ||  employee.getId().isEmpty()){
-                //insert
                 employee.setId(UUID.randomUUID().toString());
-                //Khi gọi persist, Hibernate sẽ đưa entity vào persistence context (tạm gọi là “bộ nhớ tạm của session”),
-                // và thực hiện insert vào database khi commit transaction.
                 session.persist(employee);
             }else {
                 Employee existing  = session.get(Employee.class,employee.getId());
@@ -60,55 +58,16 @@ public class EmployeeRepository implements IEmployeeRepository {
                 }
                 session.merge(employee);
             }
+
             tx.commit();
-            return employee;
-        }catch (Exception e){
-            if (tx != null) {
-                tx.rollback();
-                throw e;
-            }
+        } catch (Exception e){
+            if (tx != null) tx.rollback();
+            throw e;
         }
+
         return employee;
-//        if (employee.getId() == null || employee.getId().isEmpty()) {
-//            // INSERT
-//            employee.setId(UUID.randomUUID().toString());
-//            String sql = "INSERT INTO employee(id, name, dob, gender, salary, phone, department_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
-//
-//            try (Connection conn = BaseRepository.getConnection();
-//                 PreparedStatement ps = conn.prepareStatement(sql)) {
-//
-//                setPreparedStatement(ps, employee);
-//                ps.executeUpdate();
-//
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            // UPDATE
-//            String sql = "UPDATE employee SET name = ?, dob = ?, gender = ?, salary = ?, phone = ?, department_id = ? WHERE id = ?";
-//
-//            try (Connection conn = BaseRepository.getConnection();
-//                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-//
-//                preparedStatement.setString(1, employee.getName());
-//                preparedStatement.setDate(2, Date.valueOf(employee.getDob()));
-//                preparedStatement.setString(3, employee.getGender().name());
-//                preparedStatement.setDouble(4, employee.getSalary());
-//                preparedStatement.setString(5, employee.getPhone());
-//                preparedStatement.setInt(6, employee.getDepartmentId());
-//                preparedStatement.setString(7, employee.getId());
-//
-//                int updated = preparedStatement.executeUpdate();
-//                if (updated == 0) {
-//                    throw new ApiException(ErrorCode.EMPLOYEE_NOT_FOUND);
-//                }
-//
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return employee;re
     }
+
 
     @Override
     public boolean delete(String id) {
@@ -129,63 +88,51 @@ public class EmployeeRepository implements IEmployeeRepository {
             }
             throw e;
         }
-//        String sql = "DELETE FROM employee WHERE id = ?";
-//        try (Connection conn = BaseRepository.getConnection();
-//             PreparedStatement ps = conn.prepareStatement(sql)) {
-//
-//            ps.setString(1, id);
-//            int deleted = ps.executeUpdate();
-//            if (deleted == 0) {
-//                throw new ApiException(ErrorCode.EMPLOYEE_NOT_FOUND);
-//            }
-//            return true;
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return false;
     }
 
     @Override
-    public List<Employee> search(EmployeeSearchRequest request) {
+    public List<Employee> search(EmployeeSearchRequest req) {
         try (Session session = ConnectionUtil.sessionFactory.openSession()) {
-            StringBuilder hql = new StringBuilder("FROM Employee e WHERE 1=1");
-            List<Object> params = new ArrayList<>();
 
-            if (request.getName() != null && !request.getName().isEmpty()) {
-                hql.append(" AND e.name LIKE ?1");
-                params.add("%" + request.getName() + "%");
+            StringBuilder hql = new StringBuilder("FROM Employee e WHERE 1=1");
+
+            var params = new java.util.HashMap<String, Object>();
+
+            if (req.getName() != null && !req.getName().isEmpty()) {
+                hql.append(" AND e.name LIKE :name");
+                params.put("name", "%" + req.getName() + "%");
             }
-            if (request.getDobFrom() != null) {
-                hql.append(" AND e.dob >= ?2");
-                params.add(request.getDobFrom());
+
+            if (req.getDobFrom() != null) {
+                hql.append(" AND e.dob >= :dobFrom");
+                params.put("dobFrom", req.getDobFrom());
             }
-            if (request.getDobTo() != null) {
-                hql.append(" AND e.dob <= ?3");
-                params.add(request.getDobTo());
+
+            if (req.getDobTo() != null) {
+                hql.append(" AND e.dob <= :dobTo");
+                params.put("dobTo", req.getDobTo());
             }
-            if (request.getGender() != null) {
-                hql.append(" AND e.gender = ?4");
-                params.add(request.getGender());
+
+            if (req.getGender() != null) {
+                hql.append(" AND e.gender = :gender");
+                params.put("gender", req.getGender());
             }
-            if (request.getPhone() != null && !request.getPhone().isEmpty()) {
-                hql.append(" AND e.phone LIKE ?5");
-                params.add("%" + request.getPhone() + "%");
+
+            if (req.getPhone() != null && !req.getPhone().isEmpty()) {
+                hql.append(" AND e.phone LIKE :phone");
+                params.put("phone", "%" + req.getPhone() + "%");
             }
-            if (request.getDepartmentId() != null) {
-                hql.append(" AND e.departmentId = ?6");
-                params.add(request.getDepartmentId());
+
+            if (req.getDepartmentId() != null) {
+                hql.append(" AND e.departmentId = :dept");
+                params.put("dept", req.getDepartmentId());
             }
 
             var query = session.createQuery(hql.toString(), Employee.class);
-            for (int i = 0; i < params.size(); i++) {
-                query.setParameter(i + 1, params.get(i));
-            }
+
+            params.forEach(query::setParameter);
 
             return query.getResultList();
-        }catch (Exception e){
-            e.printStackTrace();
-            return  new  ArrayList<>();
         }
     }
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/departments")
+    @RequestMapping("/departments")
 public class DepartmentController {
     @Autowired
     private IDepartmentService service;

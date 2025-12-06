@@ -12,6 +12,7 @@ public enum ErrorCode {
     TEACHER_NOT_FOUND(40402,"Teacher is not exist",HttpStatus.NOT_FOUND),
     EMPLOYEE_NOT_FOUND(40403, "Employee is not exist", HttpStatus.NOT_FOUND),
     DEPARTMENT_NOT_FOUND(40404, "Department is not exist", HttpStatus.NOT_FOUND),
+    DEPARTMENT_IN_USE(40005, "Department is being used and cannot be deleted", HttpStatus.BAD_REQUEST),
     FILE_EMPTY(40001, "File must not be empty.", HttpStatus.BAD_REQUEST),
     FILE_INVALID_TYPE(40002, "Only image files are allowed.", HttpStatus.BAD_REQUEST),
     FILE_TOO_LARGE(40003, "File size exceeds the maximum allowed.", HttpStatus.BAD_REQUEST),
