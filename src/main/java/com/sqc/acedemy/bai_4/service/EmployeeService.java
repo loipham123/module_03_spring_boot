@@ -21,6 +21,9 @@ public class EmployeeService implements IEmployeeService{
     @Autowired
     private IEmployeeRepository employeeRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     @Override
     @Transactional
     public List<Employee> getAllEmployees() {
@@ -39,8 +42,26 @@ public class EmployeeService implements IEmployeeService{
     @Override
     @Transactional
     public Employee createEmployee(Employee employee) {
+        // 1. Tạo ID và lưu DB
         employee.setId(UUID.randomUUID().toString());
-        return employeeRepository.save(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        // 2. 💡 Gửi mail chào mừng (chạy bất đồng bộ)
+        String subject = "👋 Chào mừng đến với Công ty!";
+        String body = String.format(
+                "Xin chào %s,\n\n" +
+                        "Hồ sơ của bạn đã được tạo thành công trong hệ thống Quản lý Nhân sự với ID: %s. \n" +
+                        "Chúng tôi rất vui mừng chào đón bạn gia nhập đội ngũ.",
+                savedEmployee.getName(), savedEmployee.getId()
+        );
+
+        emailService.sendEmail(
+                savedEmployee.getEmail(),
+                subject,
+                body
+        );
+
+        return savedEmployee;
     }
 
     @Override

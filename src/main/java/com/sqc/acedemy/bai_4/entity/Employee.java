@@ -21,6 +21,8 @@ public class Employee {
     @Column(name = "id", updatable = false, nullable = false)
     String id;
     String name;
+    @Column(name = "email", unique = true, nullable = false)
+    String email;
     LocalDate dob;
     @Enumerated(EnumType.STRING)
     @Column(name = "gender")

@@ -2,6 +2,7 @@ package com.sqc.acedemy.bai_4.controller;
 
 import com.sqc.acedemy.bai_4.dto.EmployeeSearchRequest;
 import com.sqc.acedemy.bai_4.entity.Employee;
+import com.sqc.acedemy.bai_4.service.EmailService;
 import com.sqc.acedemy.bai_4.service.IEmployeeService;
 import com.sqc.acedemy.bai_4.service.JsonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import java.util.UUID;
 public class EmployeeController {
     @Autowired
     private IEmployeeService employeeService; // Chỉ gọi Service, không gọi Repository
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Employee>>> getAllEmployees() {
@@ -58,5 +62,27 @@ public class EmployeeController {
     public ResponseEntity<?> uploadAvatar(@PathVariable("id") UUID id,
                                           @RequestParam("file") MultipartFile file) {
         return JsonResponse.ok(employeeService.updateAvatar(id, file));
+
+
     }
+
+    @PostMapping("/{id}/send-email")
+    public ResponseEntity<String> sendEmail(@PathVariable String id) {
+        Employee emp = employeeService.getEmployeeById(id); // dùng service để lấy employee
+        if (emp.getEmail() == null || emp.getEmail().isEmpty()) {
+            return ResponseEntity.badRequest().body("Employee chưa có email");
+        }
+
+        emailService.sendEmail(
+                emp.getEmail(),
+                "Chào " + emp.getName(),
+                "Đây là email test từ Spring Boot"
+        );
+
+        return ResponseEntity.ok("Email đã gửi tới " + emp.getEmail());
+    }
+
+
 }
+
+
