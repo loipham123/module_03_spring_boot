@@ -9,108 +9,99 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-public class EmployeeService implements IEmployeeService{
-    @Autowired
-    FileStorageService fileStorageService;
+public class EmployeeService implements IEmployeeService {
 
     @Autowired
     private IEmployeeRepository employeeRepository;
 
     @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
     private EmailService emailService;
 
     @Override
-    @Transactional
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
     @Override
     public Employee getEmployeeById(String id) {
-        Employee e = employeeRepository.findById(id);
-        if (e == null) {
-            throw new ApiException(ErrorCode.EMPLOYEE_NOT_FOUND);
-        }
-        return e;
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new ApiException(ErrorCode.EMPLOYEE_NOT_FOUND));
     }
 
     @Override
     @Transactional
     public Employee createEmployee(Employee employee) {
-        // 1. Tạo ID và lưu DB
-        employee.setId(UUID.randomUUID().toString());
-        Employee savedEmployee = employeeRepository.save(employee);
 
-        // 2. 💡 Gửi mail chào mừng (chạy bất đồng bộ)
-        String subject = "👋 Chào mừng đến với Công ty!";
-        String body = String.format(
-                "Xin chào %s,\n\n" +
-                        "Hồ sơ của bạn đã được tạo thành công trong hệ thống Quản lý Nhân sự với ID: %s. \n" +
-                        "Chúng tôi rất vui mừng chào đón bạn gia nhập đội ngũ.",
-                savedEmployee.getName(), savedEmployee.getId()
-        );
+        Employee saved = employeeRepository.save(employee);
 
         emailService.sendEmail(
-                savedEmployee.getEmail(),
-                subject,
-                body
+                saved.getEmail(),
+                "Chào mừng!",
+                "Xin chào " + saved.getName()
         );
 
-        return savedEmployee;
+        return saved;
     }
 
     @Override
     @Transactional
-    public Employee updateEmployee(String id, Employee updatedEmp) {
-        Employee existingEmp = getEmployeeById(id); // Check tồn tại
+    public Employee updateEmployee(String id, Employee updated) {
+        Employee existing = getEmployeeById(id);
 
-        existingEmp.setName(updatedEmp.getName());
-        existingEmp.setDob(updatedEmp.getDob());
-        existingEmp.setGender(updatedEmp.getGender());
-        existingEmp.setSalary(updatedEmp.getSalary());
-        existingEmp.setPhone(updatedEmp.getPhone());
+        existing.setName(updated.getName());
+        existing.setDob(updated.getDob());
+        existing.setGender(updated.getGender());
+        existing.setSalary(updated.getSalary());
+        existing.setPhone(updated.getPhone());
+        existing.setDepartment(updated.getDepartment());
 
-        return employeeRepository.save(existingEmp);
+        return employeeRepository.save(existing);
     }
 
     @Override
     @Transactional
     public void deleteEmployee(String id) {
-        getEmployeeById(id); // Check tồn tại
-        employeeRepository.delete(id);
+        getEmployeeById(id); // kiểm tra tồn tại
+        employeeRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Employee> search(EmployeeSearchRequest req) {
+        return employeeRepository.search(
+                req.getName(),
+                req.getDobFrom(),
+                req.getDobTo(),
+                req.getGender(),
+                req.getPhone(),
+                req.getDepartmentId(),
+                req.getSalaryFrom(),
+                req.getSalaryTo()
+        );
     }
 
     @Override
     @Transactional
-    public List<Employee> search(EmployeeSearchRequest request) {
-        return employeeRepository.search(request);
-    }
-
-    @Override
     public Employee updateAvatar(UUID id, MultipartFile file) {
 
-        // Repository yêu cầu String → convert UUID → String
-        Employee employee = employeeRepository.findById(id.toString());
-        if (employee == null) {
-            throw new ApiException(ErrorCode.EMPLOYEE_NOT_FOUND);
+        Employee emp = employeeRepository.findById(id.toString())
+                .orElseThrow(() -> new ApiException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+        String oldPath = emp.getAvatar();
+        String newPath = fileStorageService.store(id, file);
+
+        if (oldPath != null && !oldPath.equals(newPath)) {
+            fileStorageService.delete(oldPath);
         }
 
-        String oldAvatar = employee.getAvatar();
-
-        String avatarPath = fileStorageService.store(id, file);
-
-        if (oldAvatar != null && !oldAvatar.equals(avatarPath)) {
-            fileStorageService.delete(oldAvatar);
-        }
-
-        employee.setAvatar(avatarPath);
-        return employeeRepository.save(employee);
+        emp.setAvatar(newPath);
+        return employeeRepository.save(emp);
     }
-
-
 }

@@ -8,14 +8,18 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IEmployeeService {
+
     List<Employee> getAllEmployees();
+
     Employee getEmployeeById(String id);
+
     Employee createEmployee(Employee employee);
+
     Employee updateEmployee(String id, Employee employee);
+
     void deleteEmployee(String id);
 
     Employee updateAvatar(UUID id, MultipartFile file);
-
 
     List<Employee> search(EmployeeSearchRequest request);
 }

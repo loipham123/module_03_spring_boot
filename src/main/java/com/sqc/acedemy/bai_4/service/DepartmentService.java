@@ -22,9 +22,8 @@ public class DepartmentService implements IDepartmentService {
 
     @Override
     public Department getById(Integer id) {
-        Department d = repository.findById(id);
-        if (d == null) throw new ApiException(ErrorCode.DEPARTMENT_NOT_FOUND);
-        return d;
+        return repository.findById(id)
+                .orElseThrow(() -> new ApiException(ErrorCode.DEPARTMENT_NOT_FOUND));
     }
 
     @Override
@@ -34,18 +33,22 @@ public class DepartmentService implements IDepartmentService {
 
     @Override
     public Department update(Integer id, Department department) {
-        getById(id);
+        // Kiểm tra tồn tại
+        Department existing = getById(id);
+
         department.setId(id);
         return repository.save(department);
     }
 
     @Override
     public void delete(Integer id) {
-        Department department = getById(id); // kiểm tra xem có tồn tại không
+        // Kiểm tra tồn tại
+        getById(id);
 
         try {
-            repository.delete(id);
+            repository.deleteById(id);
         } catch (Exception e) {
+            // Department đang được tham chiếu bởi bảng Employee
             throw new ApiException(ErrorCode.DEPARTMENT_IN_USE);
         }
     }

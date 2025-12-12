@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.thymeleaf.context.Context;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,19 +68,32 @@ public class EmployeeController {
     }
 
     @PostMapping("/{id}/send-email")
-    public ResponseEntity<String> sendEmail(@PathVariable String id) {
-        Employee emp = employeeService.getEmployeeById(id); // dùng service để lấy employee
+    public ResponseEntity<String> sendEmployeeInfo(@PathVariable String id) {
+        Employee emp = employeeService.getEmployeeById(id);
+
         if (emp.getEmail() == null || emp.getEmail().isEmpty()) {
             return ResponseEntity.badRequest().body("Employee chưa có email");
         }
 
-        emailService.sendEmail(
+        // Chuẩn bị dữ liệu Thymeleaf
+        Context context = new Context();
+        context.setVariable("name", emp.getName());
+        context.setVariable("email", emp.getEmail());
+        context.setVariable("dob", emp.getDob());
+        context.setVariable("gender", emp.getGender());
+        context.setVariable("salary", emp.getSalary());
+        context.setVariable("phone", emp.getPhone());
+        context.setVariable("departmentId", emp.getDepartment());
+        context.setVariable("avatar", emp.getAvatar() != null ? emp.getAvatar() : null);
+
+        emailService.sendHtmlEmail(
                 emp.getEmail(),
-                "Chào " + emp.getName(),
-                "Đây là email test từ Spring Boot"
+                "Thông tin nhân viên " + emp.getName(),
+                "employee_info",  // tên file: employee_info.html
+                context
         );
 
-        return ResponseEntity.ok("Email đã gửi tới " + emp.getEmail());
+        return ResponseEntity.ok("Đã gửi thông tin nhân viên tới " + emp.getEmail());
     }
 
 

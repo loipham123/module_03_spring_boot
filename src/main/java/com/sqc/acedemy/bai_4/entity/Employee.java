@@ -1,11 +1,13 @@
 package com.sqc.acedemy.bai_4.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import jdk.jfr.Enabled;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+
 import java.time.LocalDate;
 @Entity
 @Builder
@@ -30,7 +32,9 @@ public class Employee {
     @Column(name = "salary")
     double salary;
     String phone;
-    @Column(name = "department_id")
-    Integer departmentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    @JsonIgnore
+    private Department department;
     String avatar;
 }
