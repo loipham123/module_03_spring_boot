@@ -56,3 +56,4 @@
     SET email = 'loi.fan.mtp123@gmail.com'
     WHERE name = 'Hoàng Văn Hải';
 
+    DROP DATABASE employee_management;

@@ -1,2 +1,0 @@
--- ALTER TABLE employee
--- ADD COLUMN avatar VARCHAR(512);
