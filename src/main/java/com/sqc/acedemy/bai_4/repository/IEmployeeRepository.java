@@ -2,6 +2,8 @@ package com.sqc.acedemy.bai_4.repository;
 
 import com.sqc.acedemy.bai_4.entity.Employee;
 import com.sqc.acedemy.bai_4.entity.Gender;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +15,7 @@ public interface IEmployeeRepository extends JpaRepository<Employee, String> {
 
     @Query("""
         SELECT e FROM Employee e
-        LEFT JOIN FETCH e.department d
+        LEFT JOIN e.department d
         WHERE 
             (:name IS NULL OR LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')))
         AND (:dobFrom IS NULL OR e.dob >= :dobFrom)
@@ -24,7 +26,7 @@ public interface IEmployeeRepository extends JpaRepository<Employee, String> {
         AND (:salaryFrom IS NULL OR e.salary >= :salaryFrom)
         AND (:salaryTo IS NULL OR e.salary <= :salaryTo)
     """)
-    List<Employee> search(
+    Page<Employee> search(
             @Param("name") String name,
             @Param("dobFrom") LocalDate dobFrom,
             @Param("dobTo") LocalDate dobTo,
@@ -32,6 +34,7 @@ public interface IEmployeeRepository extends JpaRepository<Employee, String> {
             @Param("phone") String phone,
             @Param("departmentId") Integer departmentId,
             @Param("salaryFrom") Double salaryFrom,
-            @Param("salaryTo") Double salaryTo
+            @Param("salaryTo") Double salaryTo,
+            Pageable pageable
     );
 }

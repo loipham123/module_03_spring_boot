@@ -1,12 +1,14 @@
 package com.sqc.acedemy.bai_4.controller;
 
 import com.sqc.acedemy.bai_4.dto.EmployeeSearchRequest;
+import com.sqc.acedemy.bai_4.dto.PageResponse;
 import com.sqc.acedemy.bai_4.entity.Employee;
 import com.sqc.acedemy.bai_4.service.EmailService;
 import com.sqc.acedemy.bai_4.service.IEmployeeService;
 import com.sqc.acedemy.bai_4.service.JsonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sqc.acedemy.bai_4.dto.ApiResponse;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,15 +27,19 @@ public class EmployeeController {
     private EmailService emailService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Employee>>> getAllEmployees() {
-        return ResponseEntity.ok(ApiResponse.<List<Employee>>builder()
-                .data(employeeService.getAllEmployees())
-                .build());
+    public ResponseEntity<ApiResponse<PageResponse<Employee>>> getAllEmployees(
+            @ModelAttribute EmployeeSearchRequest request,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.<PageResponse<Employee>>builder()
+                        .data(new PageResponse<>(employeeService.search(request, pageable)))
+                        .build()
+        );
     }
 
     @GetMapping("/{id}")
     public Object getEmployeeById(@PathVariable String id) {
-        // Service đã lo việc check lỗi, Controller chỉ cần trả về
         return JsonResponse.ok(employeeService.getEmployeeById(id));
     }
 
@@ -54,10 +60,12 @@ public class EmployeeController {
     }
 
     @GetMapping("/search")
-    public Object search(@ModelAttribute EmployeeSearchRequest request) {
-        List<Employee> result = employeeService.search(request);
-        return JsonResponse.ok(result);
+    public Object search(@ModelAttribute EmployeeSearchRequest request, Pageable pageable) {
+        return JsonResponse.ok(
+                new PageResponse<>(employeeService.search(request, pageable))
+        );
     }
+
 
     @PostMapping("/{id}/avatar")
     public ResponseEntity<?> uploadAvatar(@PathVariable("id") UUID id,

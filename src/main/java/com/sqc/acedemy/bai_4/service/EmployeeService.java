@@ -6,6 +6,8 @@ import com.sqc.acedemy.bai_4.exception.ErrorCode;
 import com.sqc.acedemy.bai_4.entity.Employee;
 import com.sqc.acedemy.bai_4.repository.IEmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,8 +28,8 @@ public class EmployeeService implements IEmployeeService {
     private EmailService emailService;
 
     @Override
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public Page<Employee> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable);
     }
 
     @Override
@@ -74,7 +76,7 @@ public class EmployeeService implements IEmployeeService {
     }
 
     @Override
-    public List<Employee> search(EmployeeSearchRequest req) {
+    public Page<Employee> search(EmployeeSearchRequest req,Pageable pageable) {
         return employeeRepository.search(
                 req.getName(),
                 req.getDobFrom(),
@@ -83,7 +85,8 @@ public class EmployeeService implements IEmployeeService {
                 req.getPhone(),
                 req.getDepartmentId(),
                 req.getSalaryFrom(),
-                req.getSalaryTo()
+                req.getSalaryTo(),
+                pageable
         );
     }
 

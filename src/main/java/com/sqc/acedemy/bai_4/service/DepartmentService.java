@@ -42,13 +42,11 @@ public class DepartmentService implements IDepartmentService {
 
     @Override
     public void delete(Integer id) {
-        // Kiểm tra tồn tại
         getById(id);
 
         try {
             repository.deleteById(id);
         } catch (Exception e) {
-            // Department đang được tham chiếu bởi bảng Employee
             throw new ApiException(ErrorCode.DEPARTMENT_IN_USE);
         }
     }
